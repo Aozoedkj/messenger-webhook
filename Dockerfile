@@ -1,14 +1,18 @@
-# استخدام نسخة PHP الرسمية مع سيرفر Apache المدمج
-FROM php:8.2-apache
+# استخدام نسخة PHP الرسمية الخفيفة المخصصة لسكربتات الخلفية
+FROM php:8.2-cli
 
-# تفعيل مود إعادة الكتابة (Rewrite Module) وهو مهم للـ Webhooks
-RUN a2enmod rewrite
+# تثبيت إضافات cURL المهمة للاتصال بـ Facebook API
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    pkg-config \
+    libssl-dev \
+    && docker-php-ext-install curl
 
-# نسخ جميع ملفات مشروعك إلى مجلد السيرفر الافتراضي
-COPY . /var/www/html/
+# تحديد مجلد العمل داخل الحاوية
+WORKDIR /usr/src/app
 
-# تغيير الصلاحيات لتشغيل الملفات بأمان
-RUN chown -R www-data:www-data /var/www/html
+# نسخ ملفات مشروعك بالكامل إلى الحاوية
+COPY . .
 
-# فتح المنفذ 80 (وهو المنفذ الافتراضي الذي سيتحدث معه Render)
-EXPOSE 80
+# الأمر النهائي لتشغيل سكربت البوت المستمر في الخلفية مباشرة
+CMD [ "php", "./bot.php" ]
