@@ -8,7 +8,7 @@ RUN a2enmod rewrite
 COPY . /var/www/html/
 
 # تغيير الصلاحيات لتشغيل الملفات بأمان
-RUN chown -W www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 # فتح المنفذ 80 (وهو المنفذ الافتراضي الذي سيتحدث معه Render)
 EXPOSE 80
